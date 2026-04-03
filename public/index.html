@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance Dashboard Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="auth-wrapper" id="auth-wrapper">
+        <div class="auth-card">
+          <p class="eyebrow">Assessment Demo</p>
+          <h1>Finance Dashboard Access</h1>
+          <p class="lede">
+            Sign in or register to use the live backend. All dashboard data, records, and users are fetched from the API and stored in SQLite.
+          </p>
+
+          <div class="auth-tabs" id="auth-tabs">
+            <button class="tab-btn active" id="show-login-btn" type="button">Sign In</button>
+            <button class="tab-btn" id="show-register-btn" type="button">Register</button>
+          </div>
+
+          <form id="login-form" class="form-grid">
+            <label>
+              <span>Email</span>
+              <input id="login-email" type="email" placeholder="Enter your email" required />
+            </label>
+            <label>
+              <span>Password</span>
+              <input id="login-password" type="password" placeholder="Enter your password" required />
+            </label>
+            <button class="primary-btn" type="submit">Sign In</button>
+          </form>
+
+          <form id="register-form" class="form-grid hidden">
+            <label>
+              <span>Name</span>
+              <input id="register-name" type="text" placeholder="Your name" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input id="register-email" type="email" placeholder="you@example.com" required />
+            </label>
+            <label>
+              <span>Password</span>
+              <input id="register-password" type="password" minlength="6" placeholder="Minimum 6 characters" required />
+            </label>
+            <label>
+              <span>Role</span>
+              <select id="register-role">
+                <option value="viewer">Viewer</option>
+                <option value="analyst">Analyst</option>
+              </select>
+            </label>
+            <button class="primary-btn" type="submit">Register and Continue</button>
+          </form>
+
+          <div class="session-card hidden" id="session-card">
+            <div>
+              <p class="section-kicker">Active Session</p>
+              <h2 id="session-name">Not signed in</h2>
+              <p id="session-meta"></p>
+            </div>
+            <button class="ghost-btn" id="logout-btn" type="button">Log Out</button>
+          </div>
+
+          <div class="role-tip hidden" id="role-tip"></div>
+          <p class="notice" id="status-message">Sign in to load your dashboard.</p>
+          <div class="error-box hidden" id="error-box"></div>
+        </div>
+      </section>
+
+      <section class="dashboard-shell hidden" id="dashboard-shell">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Overview</p>
+              <h2>Dashboard Summary</h2>
+            </div>
+            <button class="ghost-btn" id="refresh-dashboard-btn" type="button">Refresh</button>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <span>Total Income</span>
+              <strong id="income-total">INR 0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Total Expenses</span>
+              <strong id="expense-total">INR 0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Net Balance</span>
+              <strong id="net-total">INR 0</strong>
+            </article>
+          </div>
+
+          <div class="two-col">
+            <div class="subpanel">
+              <h3>Recent Activity</h3>
+              <div id="recent-activity" class="list-stack"></div>
+            </div>
+            <div class="subpanel">
+              <h3>Category Totals</h3>
+              <div id="category-breakdown" class="list-stack"></div>
+            </div>
+          </div>
+
+          <div class="subpanel">
+            <h3>Monthly Trends</h3>
+            <div id="monthly-trends" class="table-wrap"></div>
+          </div>
+        </section>
+
+        <section class="panel hidden" id="records-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Records</p>
+              <h2>Financial Records</h2>
+            </div>
+            <button class="ghost-btn" id="refresh-records-btn" type="button">Refresh</button>
+          </div>
+
+          <form class="filter-grid" id="record-filters">
+            <label>
+              <span>Type</span>
+              <select name="type" id="filter-type">
+                <option value="">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </label>
+            <label>
+              <span>Category</span>
+              <input id="filter-category" name="category" type="text" placeholder="Category" />
+            </label>
+            <label>
+              <span>From</span>
+              <input id="filter-from" name="fromDate" type="date" />
+            </label>
+            <label>
+              <span>To</span>
+              <input id="filter-to" name="toDate" type="date" />
+            </label>
+            <label>
+              <span>Search</span>
+              <input id="filter-search" name="search" type="text" placeholder="Notes or category" />
+            </label>
+            <button class="primary-btn" type="submit">Apply Filters</button>
+          </form>
+
+          <div class="subpanel hidden" id="record-form-panel">
+            <div class="panel-heading compact">
+              <h3 id="record-form-title">Create Record</h3>
+              <button class="ghost-btn" id="cancel-record-edit-btn" type="button">Clear</button>
+            </div>
+            <form class="form-grid" id="record-form">
+              <input id="record-id" type="hidden" />
+              <label>
+                <span>Amount</span>
+                <input id="record-amount" type="number" min="0.01" step="0.01" required />
+              </label>
+              <label>
+                <span>Type</span>
+                <select id="record-type" required>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </label>
+              <label>
+                <span>Category</span>
+                <input id="record-category" type="text" required />
+              </label>
+              <label>
+                <span>Date</span>
+                <input id="record-date" type="date" required />
+              </label>
+              <label class="wide">
+                <span>Notes</span>
+                <textarea id="record-notes" rows="3" placeholder="Optional note"></textarea>
+              </label>
+              <button class="primary-btn" type="submit">Save Record</button>
+            </form>
+          </div>
+
+          <div id="records-table" class="table-wrap"></div>
+          <p class="helper-text" id="records-meta"></p>
+        </section>
+
+        <section class="panel hidden" id="users-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Administration</p>
+              <h2>User Management</h2>
+            </div>
+            <button class="ghost-btn" id="refresh-users-btn" type="button">Refresh</button>
+          </div>
+
+          <form class="form-grid" id="user-form">
+            <label>
+              <span>Name</span>
+              <input id="user-name" type="text" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input id="user-email" type="email" required />
+            </label>
+            <label>
+              <span>Password</span>
+              <input id="user-password" type="password" minlength="6" required />
+            </label>
+            <label>
+              <span>Role</span>
+              <select id="user-role">
+                <option value="viewer">Viewer</option>
+                <option value="analyst">Analyst</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+            <label>
+              <span>Status</span>
+              <select id="user-status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </label>
+            <button class="primary-btn" type="submit">Create User</button>
+          </form>
+
+          <div id="users-table" class="table-wrap"></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
